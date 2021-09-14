@@ -1,0 +1,7 @@
+spring:
+  config:
+    import: "configserver:"
+  application:
+    name: greeting-service
+  profiles:
+    active: prod

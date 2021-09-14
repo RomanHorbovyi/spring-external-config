@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class GreetingServiceApplication {
 
-	@Value("${messages.greeting}")
+	@Value("${messages.greeting:Hi}")
 	private String greeting;
 
 	@GetMapping("/greeting")

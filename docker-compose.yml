@@ -1,0 +1,27 @@
+version: "3.9"
+services:
+  config-server:
+    image: "maven:3.8.2-jdk-11"
+    container_name: config-server
+    ports:
+      - "8888:8888"
+    volumes:
+      - "./config-server:/usr/src/app"
+      - "mvn-local-cache:/root/.m2"
+    working_dir: "/usr/src/app"
+    command: ["mvn", "spring-boot:run"]
+  greeting-service:
+    image: "maven:3.8.2-jdk-11"
+    ports:
+      - "8080:8080"
+    volumes:
+      - "./greeting-service:/usr/src/app"
+      - "mvn-local-cache:/root/.m2"
+    working_dir: "/usr/src/app"
+    environment:
+      SPRING_CLOUD_CONFIG_URI: "http://config-server:8888"
+    depends_on:
+     - config-server
+    command: [ "mvn", "spring-boot:run" ]
+volumes:
+  mvn-local-cache:
