@@ -9,6 +9,8 @@ services:
       - "mvn-local-cache:/root/.m2"
       - /tmp
     working_dir: "/usr/src/app"
+    environment:
+      SERVICE_REGISTRY_URI: "http://service-registry:8761/eureka"
     command: ["mvn", "spring-boot:run"]
   service-registry:
     image: "maven:3.8.2-jdk-11"
@@ -24,7 +26,7 @@ services:
       - config-server
     environment:
       SPRING_CLOUD_CONFIG_URI: "http://config-server:8888"
-    command: ["/usr/scripts/wait-for-it.sh", "-t", "60", "config-server:8888", "--", "mvn", "spring-boot:run" ]
+    command: ["/usr/src/scripts/wait-for-it.sh", "-t", "60", "config-server:8888", "--", "mvn", "spring-boot:run" ]
   greeting-service:
     image: "maven:3.8.2-jdk-11"
     ports:
@@ -37,11 +39,10 @@ services:
     working_dir: "/usr/src/app"
     environment:
       SPRING_CLOUD_CONFIG_URI: "http://config-server:8888"
-      EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE: "http://service-registry:8761/eureka"
     depends_on:
      - config-server
      - service-registry
-    command: ["/usr/scripts/wait-for-it.sh", "-t", "60", "config-server:8888", "--", "mvn", "spring-boot:run" ]
+    command: ["/usr/src/scripts/wait-for-it.sh", "-t", "60", "config-server:8888", "--", "mvn", "spring-boot:run" ]
   name-service:
     image: "maven:3.8.2-jdk-11"
     ports:
@@ -54,10 +55,9 @@ services:
     working_dir: "/usr/src/app"
     environment:
       SPRING_CLOUD_CONFIG_URI: "http://config-server:8888"
-      EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE: "http://service-registry:8761/eureka"
     depends_on:
       - config-server
       - service-registry
-    command: [ "/usr/scripts/wait-for-it.sh", "-t", "60", "config-server:8888", "--", "mvn", "spring-boot:run" ]
+    command: ["/usr/src/scripts/wait-for-it.sh", "-t", "60", "config-server:8888", "--", "mvn", "spring-boot:run"]
 volumes:
   mvn-local-cache:
