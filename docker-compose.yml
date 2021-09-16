@@ -9,8 +9,6 @@ services:
       - "mvn-local-cache:/root/.m2"
       - /tmp
     working_dir: "/usr/src/app"
-    environment:
-      SERVICE_REGISTRY_URI: "http://service-registry:8761/eureka"
     command: ["mvn", "spring-boot:run"]
   service-registry:
     image: "maven:3.8.2-jdk-11"
@@ -39,6 +37,7 @@ services:
     working_dir: "/usr/src/app"
     environment:
       SPRING_CLOUD_CONFIG_URI: "http://config-server:8888"
+      SERVICE_REGISTRY_URI: "http://service-registry:8761/eureka"
     depends_on:
      - config-server
      - service-registry
@@ -55,6 +54,7 @@ services:
     working_dir: "/usr/src/app"
     environment:
       SPRING_CLOUD_CONFIG_URI: "http://config-server:8888"
+      SERVICE_REGISTRY_URI: "http://service-registry:8761/eureka"
     depends_on:
       - config-server
       - service-registry

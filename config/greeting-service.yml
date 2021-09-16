@@ -1,8 +1,2 @@
 messages:
   greeting: "Hello"
-eureka:
-  instance:
-    prefer-ip-address: true
-  client:
-    service-url:
-      defaultZone: ${SERVICE_REGISTRY_URI}

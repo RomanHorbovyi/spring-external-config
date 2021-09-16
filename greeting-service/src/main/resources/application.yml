@@ -5,3 +5,9 @@ spring:
     name: greeting-service
   profiles:
     active: prod
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: ${SERVICE_REGISTRY_URI}

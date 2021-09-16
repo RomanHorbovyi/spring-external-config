@@ -1,8 +1,2 @@
 messages:
   name: Roman
-eureka:
-  instance:
-    prefer-ip-address: true
-  client:
-    service-url:
-      defaultZone: ${SERVICE_REGISTRY_URI}
