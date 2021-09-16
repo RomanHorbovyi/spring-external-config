@@ -1,5 +1,5 @@
 messages:
-  greeting: "Hello"
+  name: Roman
 eureka:
   instance:
     prefer-ip-address: true

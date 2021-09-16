@@ -2,26 +2,62 @@ version: "3.9"
 services:
   config-server:
     image: "maven:3.8.2-jdk-11"
-    container_name: config-server
     ports:
       - "8888:8888"
     volumes:
       - "./config-server:/usr/src/app"
       - "mvn-local-cache:/root/.m2"
+      - /tmp
     working_dir: "/usr/src/app"
     command: ["mvn", "spring-boot:run"]
+  service-registry:
+    image: "maven:3.8.2-jdk-11"
+    ports:
+      - "8761:8761"
+    volumes:
+      - "./service-registry:/usr/src/app"
+      - "./wait-for-it.sh:/usr/src/scripts/wait-for-it.sh"
+      - "mvn-local-cache:/root/.m2"
+      - /tmp
+    working_dir: "/usr/src/app"
+    depends_on:
+      - config-server
+    environment:
+      SPRING_CLOUD_CONFIG_URI: "http://config-server:8888"
+    command: ["/usr/scripts/wait-for-it.sh", "-t", "60", "config-server:8888", "--", "mvn", "spring-boot:run" ]
   greeting-service:
     image: "maven:3.8.2-jdk-11"
     ports:
       - "8080:8080"
     volumes:
       - "./greeting-service:/usr/src/app"
+      - "./wait-for-it.sh:/usr/src/scripts/wait-for-it.sh"
       - "mvn-local-cache:/root/.m2"
+      - /tmp
     working_dir: "/usr/src/app"
     environment:
       SPRING_CLOUD_CONFIG_URI: "http://config-server:8888"
+      EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE: "http://service-registry:8761/eureka"
     depends_on:
      - config-server
-    command: [ "mvn", "spring-boot:run" ]
+     - service-registry
+    command: ["/usr/scripts/wait-for-it.sh", "-t", "60", "config-server:8888", "--", "mvn", "spring-boot:run" ]
+  name-service:
+    image: "maven:3.8.2-jdk-11"
+    ports:
+      - "8081:8080"
+    volumes:
+      - "./name-service:/usr/src/app"
+      - "./wait-for-it.sh:/usr/src/scripts/wait-for-it.sh"
+      - "mvn-local-cache:/root/.m2"
+      - /tmp
+    working_dir: "/usr/src/app"
+    environment:
+      SPRING_CLOUD_CONFIG_URI: "http://config-server:8888"
+      EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE: "http://service-registry:8761/eureka"
+    depends_on:
+      - config-server
+      - service-registry
+    command: [ "/usr/scripts/wait-for-it.sh", "-t", "60", "config-server:8888", "--", "mvn", "spring-boot:run" ]
 volumes:
   mvn-local-cache:
